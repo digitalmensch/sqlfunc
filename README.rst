@@ -6,8 +6,7 @@ Clever stuff with SQL in __doc__
 Features
 --------
 
-- In-memory database (Sqlite)
-- Pre-process parameters
+- In-memory or file-backed database (Sqlite)
 - Post-process returned data
 - User definded functions
 
@@ -25,6 +24,8 @@ Given this:
         );
     '''
     from sqlfunc import sqlinit, sqludf, sqlfunc, singlevalue, rowtodict
+    
+    __database__ = ':memory:' # default
     
     @sqludf
     def bcrypt_hash(password):
@@ -63,5 +64,7 @@ You can now do this:
     True
     >>> users.list_users()
     ['root']
+    >>> 'bcrypt_verify' in dir(users) # helper functions are NOT exported
+    False
 
 This library is MIT licensed.
