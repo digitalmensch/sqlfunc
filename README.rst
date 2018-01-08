@@ -56,15 +56,15 @@ You can now do this:
 
 .. code:: python
 
-    >>> import users
-    >>> users.add_user('root', 'password123')
-    >>> users.login('root', 'secret')
+    >>> import example_users
+    >>> example_users.add_user('root', 'password123')
+    >>> example_users.login('root', 'secret')
     False
-    >>> users.login('root', 'password123')
+    >>> example_users.login('root', 'password123')
     True
-    >>> users.list_users()
+    >>> example_users.list_users()
     ['root']
-    >>> 'bcrypt_verify' in dir(users) # helper functions are NOT exported
+    >>> 'bcrypt_verify' in dir(example_users) # helper functions are NOT exported
     False
 
 This library is MIT licensed.
