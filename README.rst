@@ -14,49 +14,54 @@ Features
 Example
 -------
 
+Given this:
+
 .. code:: python
 
-    >>> from sqlfunc import sqlsetup, sqlfunc, singlevalue, rowtodict, sqludf
-    >>>
-    >>> sqlsetup('''
-    ...     CREATE TABLE users (username TEXT UNIQUE NOT NULL, password TEXT NOT NULL);
-    ... ''')
-    >>> @sqlfunc()
-    ... add_user(username=None, password=lambda pw: bcrypt(pw)):
-    ...     ''' INSERT OR IGNORE INTO users (username, password)
-    ...         VALUES (:username, :password);
-    ...     '''
-    ...
-    >>> add_user('root', 'super secret 123')
-    1
-    >>> add_user('guest', 'guest')
-    1
-    >>> @sqlfunc(post=singlevalue)
-    ... def number_of_users():
-    ...     ''' SELECT count(*) FROM users;
-    ...     '''
-    ...
-    >>> number_of_users()
-    2
-    >>> @sqlfunc(post=rowtodict)
-    ... def list_users():
-    ...     ''' SELECT username, coolness(username) as coolness FROM users;
-    ...     '''
-    ...
-    >>> @sqludf
-    ... def coolness(username):
-    ...     if 'root' == username: return 99
-    ...     return -1
-    ...
-    >>> list_users()
-    [{'username': 'root', 'coolness': 99}, {'username': 'guest', 'coolness': -1}]
-    >>> @sqlfunc(post=lambda row: verify(row[0]), onerror=False)
-    ... def login(username=None, password=None):
-    ...     ''' SELECT password FROM users WHERE password=:password;
-    ...     '''
-    ...
-    >>> login('root', 'wrong password')
-    False
+    ''' CREATE TABLE IF NOT EXISTS users (
+            userid   INTEGER PRIMARY KEY,
+            username TEXT    UNIQUE NOT NULL,
+            bcrypt   BLOB    NOT NULL
+        );
+    '''
+    from sqlfunc import sqlinit, sqludf, sqlfunc, singlevalue, rowtodict
+    
+    @sqludf
+    def bcrypt_hash(password):
+        # call to library here
+        return b'$2b$12$.OjbRwRejxw92C89sA6JkOVrhmQzGsjoyCf1ofIN9hUNdHFufb3ty'
+    
+    @sqludf
+    def bcrypt_verify(password, bcrypthash):
+        # call to library here
+        return True
+    
+    @sqlfunc
+    def add_user(username, password):
+        ''' INSERT OR IGNORE INTO $$$ (username, bcrypthash)
+            VALUES (:username, bcrypt_hash(:password));
+        '''
+     
+    @sqlfunc(post=lambda x: bool(list(x)))
+    def login(username, password):
+        ''' SELECT 1 FROM users
+            WHERE username=:username
+              AND bcrypt_verify(:password, bcrypt);
+        '''
+        
+    sqlinit()
 
+You can now do this:
+
+.. code:: python
+
+    >>> import users
+    >>> users.add_user('root', 'password123')
+    >>> users.login('root', 'secret')
+    False
+    >>> users.login('root', 'password123')
+    True
+    >>> users.list_users()
+    ['root']
 
 This library is MIT licensed.
