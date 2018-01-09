@@ -4,7 +4,7 @@
         bcrypt   BLOB    NOT NULL
     );
 '''
-from sqlfunc import sqlinit, sqludf, sqlfunc, singlevalue, rowtodict
+from sqlfunc import sqlinit, sqludf, sqlfunc
 
 __database__ = ':memory:' # default
 
