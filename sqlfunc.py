@@ -1,6 +1,7 @@
 import sqlite3
 import inspect
 import functools
+import re
 
 ################################################################################
 #
@@ -30,20 +31,26 @@ class sqldb(object):
                 bound.apply_defaults()
                 mapping = dict(zip(params, bound.args))
 
-                result = list(self.__cur.execute(sql, mapping))
-                print(result)
-                print('single', single)
-                print('default', default)
+                result = self.__cur.execute(sql, mapping)
 
-                if single:
-                    for row in result:
-                        print('row', row)
-                        return post(row) if post else row
+                if result.description:
+                    keys = [
+                        '_'.join(re.findall('\w[\w\d]+', attr[0]))
+                        for attr in result.description
+                    ]
+                    result = map(lambda vals: dict(zip(keys, vals)), result)
+
+                    if single:
+                        for r in result:
+                            return post(r) if post else r
+                        else:
+                            return default
+
                     else:
-                        return default
+                        return list(map(post, result) if post else result)
 
-                return map(post, result) if post else result
-
+                else:
+                    return result.rowcount
 
             return _function
 
