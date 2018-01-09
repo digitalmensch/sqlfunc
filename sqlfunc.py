@@ -1,6 +1,7 @@
 import sqlite3
 import inspect
 import functools
+import contextlib
 import re
 
 ################################################################################
@@ -9,10 +10,11 @@ import re
 
 class sqldb(object):
 
-    def __init__(self, sql, database=':memory:'):
+    def __init__(self, sql=None, database=':memory:'):
         self.__db = sqlite3.connect(database)
-        self.__cur = self.__db.cursor()
-        self.__cur.execute(sql)
+        if sql is not None:
+            with contextlib.closing(self.__db.cursor()) as cur:
+                cur.execute(sql)
 
     def sqludf(self, func):
         sig = inspect.signature(func)
@@ -27,30 +29,32 @@ class sqldb(object):
 
             @functools.wraps(func)
             def _function(*args, **kwargs):
-                bound = signature.bind(*args, **kwargs)
-                bound.apply_defaults()
-                mapping = dict(zip(params, bound.args))
+                with contextlib.closing(self.__db.cursor()) as cur:
+                    bound = signature.bind(*args, **kwargs)
+                    bound.apply_defaults()
+                    mapping = dict(zip(params, bound.args))
 
-                result = self.__cur.execute(sql, mapping)
+                    result = cur.execute(sql, mapping)
 
-                if result.description:
-                    keys = [
-                        '_'.join(re.findall('\w[\w\d]+', attr[0]))
-                        for attr in result.description
-                    ]
-                    result = map(lambda vals: dict(zip(keys, vals)), result)
+                    if result.description:
+                        keys = [
+                            '_'.join(re.findall('\w[\w\d]+', attr[0]))
+                            for attr in result.description
+                        ]
+                        result = map(lambda vals: dict(zip(keys, vals)), result)
 
-                    if single:
-                        for r in result:
-                            return post(r) if post else r
+                        if single:
+                            for r in result:
+                                return post(r) if post else r
+                            else:
+                                return default
+
                         else:
-                            return default
+                            return list(map(post, result) if post else result)
 
                     else:
-                        return list(map(post, result) if post else result)
-
-                else:
-                    return result.rowcount
+                        self.__db.commit()
+                        return result.rowcount
 
             return _function
 
