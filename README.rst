@@ -64,7 +64,5 @@ You can now do this:
     True
     >>> example_users.list_users()
     ['root']
-    >>> 'bcrypt_verify' in dir(example_users) # helper functions are NOT exported
-    False
 
 This library is MIT licensed.
