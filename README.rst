@@ -3,8 +3,8 @@ sqlfunc
 
 Clever stuff with SQL in __doc__
 
-.. image:: https://snyk.io/test/github/digitalmensch/contrapy/badge.svg?targetFile=requirements.txt
-   :target: https://snyk.io/test/github/digitalmensch/contrapy?targetFile=requirements.txt
+.. image:: https://snyk.io/test/github/digitalmensch/sqlfunc/badge.svg?targetFile=requirements.txt
+   :target: https://snyk.io/test/github/digitalmensch/sqlfunc?targetFile=requirements.txt
    :alt: Known Vulnerabilities
 
 Features
