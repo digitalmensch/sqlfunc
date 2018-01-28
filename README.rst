@@ -3,9 +3,14 @@ sqlfunc
 
 Clever stuff with SQL in __doc__
 
-.. image:: https://snyk.io/test/github/digitalmensch/sqlfunc/badge.svg?targetFile=requirements.txt
-   :target: https://snyk.io/test/github/digitalmensch/sqlfunc?targetFile=requirements.txt
-   :alt: Known Vulnerabilities
+.. image:: https://snyk.io/test/github/digitalmensch/sqlfunc/badge.svg
+   :target: https://snyk.io/test/github/digitalmensch/sqlfunc
+
+.. image:: https://travis-ci.org/digitalmensch/sqlfunc.svg?branch=master
+   :target: https://travis-ci.org/digitalmensch/sqlfunc
+
+.. image:: https://coveralls.io/repos/github/digitalmensch/sqlfunc/badge.svg?branch=master
+   :target: https://coveralls.io/github/digitalmensch/sqlfunc?branch=master
 
 Features
 --------
