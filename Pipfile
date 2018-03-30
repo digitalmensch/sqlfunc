@@ -13,6 +13,7 @@ apsw = "*"
 [dev-packages]
 
 pytest = "*"
+pytest-runner = "*"
 
 
 [requires]
