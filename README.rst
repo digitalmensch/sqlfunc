@@ -1,3 +1,6 @@
+THIS IS WORK IN PROGRESS AND UNDERGOING A REWRITE
+=================================================
+
 sqlfunc
 =======
 
@@ -25,7 +28,7 @@ Example
 Given this:
 
 .. code:: python
-        
+
     ''' CREATE TABLE IF NOT EXISTS users (
             userid   INTEGER PRIMARY KEY,
             username TEXT    UNIQUE NOT NULL,
